@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -6,22 +7,28 @@ using UnityEngine;
 /// </summary>
 public class LevelGenerator : MonoBehaviour
 {
+    public Action<Vector3> EndLevelGenerate = delegate { };
+
     [SerializeField]
     private SectionController _sectionPrefab;
     [SerializeField]
     private Vector3Int _sizeLevel;
 
     private SectionController[,,] _sections;
-    private void Start()
+    private Vector3 _positionadjustment;
+
+    private void Awake()
     {
-        GenetatingLevel();
+        GenerateLevel();
     }
 
-    private void GenetatingLevel()
+    private void GenerateLevel()
     {
         _sizeLevel.x = _sizeLevel.x < 2 ? 2 : _sizeLevel.x;
         _sizeLevel.y = _sizeLevel.y < 2 ? 2 : _sizeLevel.y;
         _sizeLevel.z = _sizeLevel.z < 1 ? 1 : _sizeLevel.z;
+
+        _positionadjustment = new Vector3(-((float)_sizeLevel.x / 2), (float)_sizeLevel.z / 2, (float)_sizeLevel.y / 2);
 
         _sections = new SectionController[_sizeLevel.x, _sizeLevel.y, _sizeLevel.z];
 
@@ -32,7 +39,7 @@ public class LevelGenerator : MonoBehaviour
                 for (int j = 0; j < _sizeLevel.y; j++)
                 {
                     _sections[i, j, z] = Instantiate(_sectionPrefab, transform);
-                    _sections[i, j, z].transform.position = new Vector3(i, -z, -j);
+                    _sections[i, j, z].transform.position = new Vector3(i, -z, -j) + _positionadjustment;
                     _sections[i, j, z].Position = new Vector3Int(i, j, z);
                     if (i == _sizeLevel.x - 1)
                     {
@@ -49,11 +56,14 @@ public class LevelGenerator : MonoBehaviour
                 }
             }
 
-            _sections[Random.Range(0, _sizeLevel.x - 1), Random.Range(0, _sizeLevel.y - 1), 
+            _sections[UnityEngine.Random.Range(0, _sizeLevel.x - 1), UnityEngine.Random.Range(0, _sizeLevel.y - 1), 
                 z].ActiveWall(z == _sizeLevel.z -1 ? Walls.FINISH : Walls.FLOOR, z == _sizeLevel.z - 1 ? true : false);
 
             GenetatingPath(z);
         }
+
+
+        EndLevelGenerate?.Invoke(_positionadjustment);
     }
 
     /// <summary>
@@ -62,7 +72,7 @@ public class LevelGenerator : MonoBehaviour
     /// <param name="row">Слой лабиринта</param>
     private void GenetatingPath(int row)
     {
-        SectionController current = _sections[Random.Range(0, _sizeLevel.x - 1), Random.Range(0, _sizeLevel.y - 1), row];
+        SectionController current = _sections[UnityEngine.Random.Range(0, _sizeLevel.x - 1), UnityEngine.Random.Range(0, _sizeLevel.y - 1), row];
         current.IsVisited = true;
 
         Stack<SectionController> stack = new Stack<SectionController>();
@@ -73,7 +83,7 @@ public class LevelGenerator : MonoBehaviour
 
             if (unvisitedNeighbors.Count > 0)
             {
-                SectionController newCurrent = unvisitedNeighbors[Random.Range(0, unvisitedNeighbors.Count)];
+                SectionController newCurrent = unvisitedNeighbors[UnityEngine.Random.Range(0, unvisitedNeighbors.Count)];
                 newCurrent.IsVisited = true;
                 RemoveWall(current, newCurrent);
                 current = newCurrent;
