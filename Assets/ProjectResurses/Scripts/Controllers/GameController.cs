@@ -31,7 +31,6 @@ public class GameController : MonoBehaviour
             _mazeRotator.IsConstantRotation = false;
             _player = Instantiate(_playerPrefab, _levelGenerator.transform.position + spawnPosition + new Vector3(0.5f, -0.2f, -0.5f), Quaternion.identity);
             _player.EndLevel += FinishLevel;
-            _mazeRotator.Rotating(Vector3.right, 10);
             _locked.LockMouse(true);
             _inputController.enabled = true;
             _cameraRotateController.enabled = true;
