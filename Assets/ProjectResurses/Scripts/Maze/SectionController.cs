@@ -21,22 +21,32 @@ public class SectionController : MonoBehaviour
     private GameObject _roof;
     [SerializeField]
     private GameObject _finish;
+    [SerializeField]
+    private Material _interiorWallMaterial;
 
-    public void ActiveWall(Walls selectedWall, bool isActive)
+    public void ActiveWall(Walls selectedWall, bool isActive, bool isInteriorWall = false)
     {
         switch (selectedWall)
         {
             case Walls.LEFT:
                 _leftWall.SetActive(isActive);
+                if (isInteriorWall)
+                    _leftWall.GetComponent<MeshRenderer>().material = _interiorWallMaterial;
                 break;
             case Walls.RIGHT:
                 _rightWall.SetActive(isActive);
+                if (isInteriorWall)
+                    _rightWall.GetComponent<MeshRenderer>().material = _interiorWallMaterial;
                 break;
             case Walls.UP:
                 _upWall.SetActive(isActive);
+                if (isInteriorWall)
+                    _upWall.GetComponent<MeshRenderer>().material = _interiorWallMaterial;
                 break;
             case Walls.DOWN:
                 _downWall.SetActive(isActive);
+                if (isInteriorWall)
+                    _downWall.GetComponent<MeshRenderer>().material = _interiorWallMaterial;
                 break;
             case Walls.FLOOR:
                 _floor.SetActive(isActive);

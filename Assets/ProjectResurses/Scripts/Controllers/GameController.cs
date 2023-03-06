@@ -6,22 +6,61 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     [SerializeField]
-    private GameObject _playerPrefab;
+    private PlayerController _playerPrefab;
     [SerializeField]
     private LevelGenerator _levelGenerator;
+    [SerializeField]
+    private MazeRotator _mazeRotator;
+    [SerializeField]
+    private LockedMouse _locked;
+    [SerializeField]
+    private InputController _inputController;
+    [SerializeField]
+    private CameraRotateController _cameraRotateController;
+    [SerializeField]
+    private MainMenu _mainMenu;
 
-    private void Awake()
+    private PlayerController _player;
+    private Vector3 spawnPosition;
+    public void StartGame(Vector3Int sizeLevel, bool isStartGame)
     {
-        _levelGenerator.EndLevelGenerate += StartGame;
+        DeleteOldMaze();
+        _levelGenerator.GenerateLevel(sizeLevel, ref spawnPosition);
+        if (isStartGame)
+        {
+            _mazeRotator.IsConstantRotation = false;
+            _player = Instantiate(_playerPrefab, _levelGenerator.transform.position + spawnPosition + new Vector3(0.5f, -0.2f, -0.5f), Quaternion.identity);
+            _player.EndLevel += FinishLevel;
+            _mazeRotator.Rotating(Vector3.right, 10);
+            _locked.LockMouse(true);
+            _inputController.enabled = true;
+            _cameraRotateController.enabled = true;
+        }
+        else
+        {
+            if (_player != null)
+            {
+                _player.EndLevel -= FinishLevel;
+                Destroy(_player.gameObject);
+            }
+            _mazeRotator.IsConstantRotation = true;
+            _inputController.enabled = false;
+            _cameraRotateController.enabled = false;
+        }
     }
 
-    private void OnDestroy()
+    public void FinishLevel()
     {
-        _levelGenerator.EndLevelGenerate -= StartGame;
+        _mainMenu.gameObject.SetActive(true);
     }
 
-    public void StartGame(Vector3 spawnPosition)
+    private void DeleteOldMaze()
     {
-        Instantiate(_playerPrefab, _levelGenerator.transform.position + spawnPosition + new Vector3(0.5f, -0.4f, -0.5f), Quaternion.identity);
+        Transform[] objects = _levelGenerator.GetComponentsInChildren<Transform>();
+
+        for (int i = 1; i < objects.Length; i++)
+        {
+            Destroy(objects[i].gameObject);
+        }
     }
 }
