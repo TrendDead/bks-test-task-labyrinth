@@ -8,7 +8,7 @@ public class InputController : MonoBehaviour
     [SerializeField]
     private MazeRotator _mazeRotator;
     [SerializeField]
-    private CameraZoomController _cameraZoomController;
+    private CameraZoom _cameraZoomController;
     [SerializeField]
     private CameraRotateController _cameraRotateController;
     [SerializeField]
@@ -34,11 +34,11 @@ public class InputController : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.Space))
         {
-            _cameraZoomController.CameraZoom(-1);
+            _cameraZoomController.Zoom(-1);
         }
         if (Input.GetKey(KeyCode.LeftControl))
         {
-            _cameraZoomController.CameraZoom(1);
+            _cameraZoomController.Zoom(1);
         }
         if(Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
         {

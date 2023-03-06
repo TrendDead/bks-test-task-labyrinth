@@ -4,7 +4,7 @@ using UnityEngine;
 /// Контроллер камеры
 /// </summary>
 [RequireComponent(typeof(Camera))]
-public class CameraZoomController : MonoBehaviour
+public class CameraZoom : MonoBehaviour
 {
     [SerializeField]
     private float _speedZoom;
@@ -16,7 +16,11 @@ public class CameraZoomController : MonoBehaviour
         _camera = GetComponent<Camera>();
     }
 
-    public void CameraZoom(int zoom)
+    /// <summary>
+    /// Зум камеры
+    /// </summary>
+    /// <param name="zoom"></param>
+    public void Zoom(int zoom)
     {
         _camera.fieldOfView += (zoom * _speedZoom);
     }
